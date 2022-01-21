@@ -144,9 +144,11 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="IDontGetIt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader\shader_s.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\shader.fs" />
