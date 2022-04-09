@@ -147,6 +147,7 @@
     <ClCompile Include="IDontGetIt.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="shader\shader_s.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
