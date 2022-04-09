@@ -72,6 +72,7 @@ int main()
 
     // camera init
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    camera.setStayOnGround(true);
 
 	
 	// set up vertex data (and buffer(s)) and configure vertex attributes

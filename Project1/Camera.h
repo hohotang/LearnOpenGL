@@ -39,6 +39,7 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
+    bool stayOnGround = false;
 
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -69,15 +70,18 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
+        glm::vec3 move_front = stayOnGround ? glm::normalize(glm::cross(WorldUp, Right)) : Front;
         if (direction == FORWARD)
-            Position += Front * velocity;
+            Position += move_front * velocity;
         if (direction == BACKWARD)
-            Position -= Front * velocity;
+            Position -= move_front * velocity;
         if (direction == LEFT)
             Position -= Right * velocity;
         if (direction == RIGHT)
             Position += Right * velocity;
     }
+
+    void setStayOnGround(bool stayG = false) { stayOnGround = stayG; }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
