@@ -235,6 +235,10 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // moving light
+        lightPos.x = cos(glfwGetTime()) * 2;
+        lightPos.z = sin(glfwGetTime()) * 2;
+
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
