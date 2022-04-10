@@ -29,10 +29,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\shader.vs">
+    <None Include="shader\colors.vs">
       <Filter>Source Files\shader</Filter>
     </None>
-    <None Include="shader\shader.fs">
+    <None Include="shader\colors.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\light.vs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\light.fs">
       <Filter>Source Files\shader</Filter>
     </None>
   </ItemGroup>

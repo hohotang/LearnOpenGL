@@ -152,8 +152,10 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\shader.fs" />
-    <None Include="shader\shader.vs" />
+    <None Include="shader\colors.fs" />
+    <None Include="shader\colors.vs" />
+    <None Include="shader\light.fs" />
+    <None Include="shader\light.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
