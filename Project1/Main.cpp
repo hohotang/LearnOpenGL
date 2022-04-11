@@ -229,6 +229,9 @@ int main()
         lightingShader.setVec3("light.ambient", ambientColor);
         lightingShader.setVec3("light.diffuse", diffuseColor);
         lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        float emission_strenght = sin(glfwGetTime());
+        emission_strenght = emission_strenght > 0 ? emission_strenght : -emission_strenght;
+        lightingShader.setFloat("emission_light", emission_strenght);
 
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);

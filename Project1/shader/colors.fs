@@ -6,6 +6,7 @@ in vec3 Normal;
 in vec2 TexCoords;
 
 uniform vec3 viewPos;
+uniform float emission_light;
 
 struct Material {
     sampler2D diffuse;
@@ -47,7 +48,7 @@ void main()
     vec3 emission = vec3(0.0);
     if (texture(material.specular, TexCoords).r == 0.0)
     {    
-        emission = vec3(texture(material.emission, TexCoords));
+        emission = emission_light * vec3(texture(material.emission, TexCoords));
     }
 
 	vec3 result = ambient + diffuse + specular + emission;
