@@ -170,7 +170,7 @@ int main()
     // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------
     unsigned int diffuseMap = loadTexture("resource/container2.png");
-    unsigned int specularMap = loadTexture("resource/container2_specular.png");
+    unsigned int specularMap = loadTexture("resource/lighting_maps_specular_color.png");
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
