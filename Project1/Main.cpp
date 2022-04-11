@@ -170,7 +170,8 @@ int main()
     // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------
     unsigned int diffuseMap = loadTexture("resource/container2.png");
-    unsigned int specularMap = loadTexture("resource/lighting_maps_specular_color.png");
+    unsigned int specularMap = loadTexture("resource/container2_specular.png");
+    unsigned int emissionMap = loadTexture("resource/matrix.jpg");
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
@@ -178,6 +179,7 @@ int main()
 
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
+    lightingShader.setInt("material.emission", 2);
     lightingShader.setFloat("material.shininess", 32.0f);
 
     // render loop
@@ -216,6 +218,9 @@ int main()
 
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, specularMap);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, emissionMap);
 
         lightingShader.use();
         lightingShader.setVec3("light.position", lightPos);
