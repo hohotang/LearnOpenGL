@@ -181,6 +181,7 @@ int main()
     lightingShader.setInt("material.specular", 1);
     lightingShader.setInt("material.emission", 2);
     lightingShader.setFloat("material.shininess", 32.0f);
+    lightingShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
 
     // render loop
     // -----------
@@ -219,8 +220,8 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, specularMap);
 
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, emissionMap);
+        //glActiveTexture(GL_TEXTURE2);
+        //glBindTexture(GL_TEXTURE_2D, emissionMap);
 
         lightingShader.use();
         lightingShader.setVec3("light.position", lightPos);
@@ -239,23 +240,29 @@ int main()
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view);       
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, cubePositions[0]);
-        lightingShader.setMat4("model", model);
-        // render the cube
+        glm::mat4 model;
         glBindVertexArray(cubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            lightingShader.setMat4("model", model);
 
-        lightCubeShader.use();
-        lightCubeShader.setVec3("lightColor", lightColor);
-        lightCubeShader.setMat4("projection", projection);
-        lightCubeShader.setMat4("view", view);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-        lightCubeShader.setMat4("model", model);
-        // render the light cube
-        glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        //lightCubeShader.use();
+        //lightCubeShader.setVec3("lightColor", lightColor);
+        //lightCubeShader.setMat4("projection", projection);
+        //lightCubeShader.setMat4("view", view);
+        //model = glm::mat4(1.0f);
+        //model = glm::translate(model, lightPos);
+        //lightCubeShader.setMat4("model", model);
+        //// render the light cube
+        //glBindVertexArray(lightVAO);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
