@@ -52,11 +52,17 @@ void main()
     vec3 specular = light.specular * spec * texture(material.specular, TexCoords).rgb;  
     
     // spotlight (soft edges)
-    float theta = dot(lightDir, normalize(-light.direction)); 
-    float epsilon = (light.cutOff - light.outerCutOff);
-    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-    diffuse  *= intensity;
-    specular *= intensity;
+    float theta = dot(lightDir, normalize(-light.direction));
+    float coef = dot(norm, lightDir);
+
+    if (coef >= 0.0 && coef <= 1.0) {
+        if (theta >= light.cutOff) discard;
+    }
+
+    //float epsilon = (light.cutOff - light.outerCutOff);
+    //float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+    //diffuse  *= intensity;
+    //specular *= intensity;
     
     // attenuation
     float distance    = length(light.position - FragPos);
