@@ -185,6 +185,7 @@ int main()
     lightingShader.setFloat("light.linear", 0.09f);
     lightingShader.setFloat("light.quadratic", 0.032f);
     lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+    lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(15.0f)));
 
     // render loop
     // -----------
