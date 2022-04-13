@@ -76,11 +76,11 @@ void main()
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir); 
 
     // phase 4: emission
-    if (texture(material.specular, TexCoords).r == 0.0)
+    /*if (texture(material.specular, TexCoords).r == 0.0)
     {    
         vec3 emission = vec3(texture(material.emission, TexCoords));
         result += emission;
-    }
+    }*/
   
     FragColor = vec4(result, 1.0);
 }
