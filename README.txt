@@ -1,1 +1,1 @@
-build your own GLFW
+build your own GLFW, Assimp
