@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Tang\OpenGL\GLFW\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Tang\OpenGL\GLFW\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)GLFW\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)GLFW\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
