@@ -1,2 +1,2 @@
 build your own GLFW, Assimp
-put it in include and lib
+put Assimp in include and lib in file Assimp
