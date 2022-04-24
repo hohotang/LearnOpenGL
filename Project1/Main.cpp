@@ -25,9 +25,10 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
+// TODO setting.h
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 900;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -41,6 +42,11 @@ float lastFrame = 0.0f; // Time of last frame
 
 bool ui_switch = false;
 bool ui_show = false;
+
+// settings
+unsigned int view_width = SCR_WIDTH;
+unsigned int view_height = SCR_HEIGHT;
+
 
 
 int main()
@@ -251,7 +257,7 @@ int main()
         lightingShader.setFloat("emission_light", emission_strenght);
 
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)view_width / (float)view_height, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view);
@@ -342,6 +348,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+    view_width = width;
+    view_height = height;
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
