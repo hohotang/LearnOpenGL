@@ -55,7 +55,7 @@ uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
 uniform float emission_light;
-uniform bool shaderSwitch;
+uniform bool light_shader;
 uniform sampler2D texture_diffuse1;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -64,7 +64,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {
-    if (shaderSwitch)
+    if (!light_shader)
     {
         FragColor = texture(texture_diffuse1, TexCoords);
         return;

@@ -167,6 +167,7 @@
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="mygui.h" />
     <ClInclude Include="shader\shader_s.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
