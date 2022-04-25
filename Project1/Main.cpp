@@ -349,23 +349,19 @@ int main()
         glStencilMask(0x00);
         glDisable(GL_DEPTH_TEST);
         outLineShader.use();
-        float scale = 1.1f;
         // cubes
         glBindVertexArray(cubeVAO);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        model = glm::scale(model, glm::vec3(scale, scale, scale));
         outLineShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(scale, scale, scale));
         outLineShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         model = glm::mat4(1.0f);
-        model = glm::scale(model, glm::vec3(scale, scale, scale));
         outLineShader.setMat4("model", model);
         ourModel.Draw(outLineShader);
 
