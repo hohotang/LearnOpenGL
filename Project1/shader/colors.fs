@@ -62,26 +62,35 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
-float near = 0.1; 
-float far  = 100.0; 
+float near = 0.1f; 
+float far  = 100.0f; 
   
-float LinearizeDepth(float depth) 
+float linearizeDepth(float depth)
 {
-    float z = depth * 2.0 - 1.0; // back to NDC 
-    return (2.0 * near * far) / (far + near - z * (far - near));	
+	return (2.0 * near * far) / (far + near - (depth * 2.0 - 1.0) * (far - near));
 }
 
+float logisticDepth(float depth, float steepness, float offset)
+{
+	float zVal = linearizeDepth(depth);
+	return (1 / (1 + exp(-steepness * (zVal - offset))));
+}
+
+// TODO control fog effect by gui
 void main()
 {
-    if (!light_shader)
-    {
-        float depth = LinearizeDepth(gl_FragCoord.z) / far; // divide by far for demonstration
-        FragColor = vec4(vec3(depth), 1.0);
-        return;
-    }
-    // properties
+// properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
+	float depth = logisticDepth(gl_FragCoord.z, 0.5f, 5.0f);
+
+    if (!light_shader)
+    {
+        vec3 result = vec3(0.0);
+        result = CalcDirLight(dirLight, norm, viewDir);
+	    FragColor = vec4(result, 1.0) * (1.0f - depth) + vec4(depth * vec3(0.1f, 0.1f, 0.1f), 1.0f);
+        return;
+    }    
 
     vec3 result = vec3(0.0);
     // phase 1: Directional lighting
@@ -98,7 +107,7 @@ void main()
         result += emission;
     }*/
   
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0) * (1.0f - depth) + vec4(depth * vec3(0.1f, 0.1f, 0.1f), 1.0f);
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
