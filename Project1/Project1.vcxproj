@@ -176,6 +176,8 @@
     <None Include="shader\colors.vs" />
     <None Include="shader\light.fs" />
     <None Include="shader\light.vs" />
+    <None Include="shader\outline.fs" />
+    <None Include="shader\outline.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
