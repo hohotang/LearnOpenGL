@@ -54,9 +54,11 @@ uniform Material material;
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
-uniform bool light_shader;
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture1;
+
+uniform bool light_shader;
+uniform bool fog_effect;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -82,33 +84,39 @@ void main()
 // properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-	float depth = logisticDepth(gl_FragCoord.z, 0.5f, 5.0f);
+	
 
-    if (!light_shader)
-    {
-        vec3 result = vec3(0.0);
-        result = CalcDirLight(dirLight, norm, viewDir);
-	    FragColor = vec4(result, 1.0) * (1.0f - depth) + vec4(depth * vec3(0.1f, 0.1f, 0.1f), 1.0f);
-        return;
-    }    
-
-    vec3 result = vec3(0.0);
+    
     // phase 1: Directional lighting
+    vec3 result = vec3(0.0);
     result = CalcDirLight(dirLight, norm, viewDir);
-    // phase 2: Point lights
-    for(int i = 0; i < NR_POINT_LIGHTS; i++)
-        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir); 
-    // phase 3: spot light
-    result += CalcSpotLight(spotLight, norm, FragPos, viewDir); 
 
-    // phase 4: emission
-    /*if (texture(material.specular, TexCoords).r == 0.0)
-    {    
-        vec3 emission = vec3(texture(material.emission, TexCoords));
-        result += emission;
-    }*/
+    // light
+    if (light_shader == true)
+    {
+        // phase 2: Point lights
+        for(int i = 0; i < NR_POINT_LIGHTS; i++)
+            result += CalcPointLight(pointLights[i], norm, FragPos, viewDir); 
+        // phase 3: spot light
+        result += CalcSpotLight(spotLight, norm, FragPos, viewDir); 
+
+        // phase 4: emission
+        /*if (texture(material.specular, TexCoords).r == 0.0)
+        {    
+            vec3 emission = vec3(texture(material.emission, TexCoords));
+            result += emission;
+        }*/
+    }
+    // fog
+    float fog_coef1 = 1.0f;
+    vec4 fog_coef2 = vec4(0.0f);
+    if (fog_effect){
+        float depth = logisticDepth(gl_FragCoord.z, 0.5f, 5.0f);
+        fog_coef1 = 1.0f - depth;
+        fog_coef2 = vec4(depth * vec3(0.1f, 0.1f, 0.1f), 1.0f);
+    }
   
-    FragColor = vec4(result, 1.0) * (1.0f - depth) + vec4(depth * vec3(0.1f, 0.1f, 0.1f), 1.0f);
+    FragColor = vec4(result, 1.0) * fog_coef1 + fog_coef2;
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)

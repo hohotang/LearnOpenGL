@@ -28,13 +28,10 @@ static void glfw_error_callback(int error, const char* description)
 }
 
 // TODO setting.h
-// TODO camera.h
-// TODO lightSource.h
-// TODO maybe a better Shader_s.h
 // settings
 const unsigned int SCR_WIDTH = 1600;
 const unsigned int SCR_HEIGHT = 900;
-
+MyGui* my_gui = new MyGui;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0;
@@ -46,7 +43,6 @@ float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
 bool ui_switch = false;
-bool ui_show = false;
 
 // settings
 unsigned int view_width = SCR_WIDTH;
@@ -81,7 +77,7 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
     glfwSwapInterval(1); // Enable vsync
 
-    MyGui my_gui(window, glsl_version);
+    my_gui->init(window, glsl_version);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -110,6 +106,7 @@ int main()
     Shader lightingShader("shader/colors.vs", "shader/colors.fs");
     Shader lightCubeShader("shader/light.vs", "shader/light.fs");
     Shader outLineShader("shader/outline.vs", "shader/outline.fs");
+    my_gui->regShader(&lightingShader);
 
     // load models
     // -----------
@@ -242,7 +239,6 @@ int main()
     // -------------------------------------------------------------------------------------------
     lightingShader.use(); // don't forget to activate/use the shader before setting uniforms!
 
-    // TODO Material thing
     LightSource light;
     for (unsigned int i = 0; i < 4; i++) {
         light.addPoint(pointLightPositions[i], pointLightColors[i]);
@@ -250,6 +246,7 @@ int main()
     light.updateShader(lightingShader);
     light.updateShaderCamera(camera, lightingShader);
 
+    // TODO delete material
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
     lightingShader.setInt("material.emission", 2);
@@ -280,8 +277,8 @@ int main()
         outLineShader.setMat4("view", view);
         outLineShader.setFloat("outlining", 0.08f);
 
+        // TODO a shader contorller, that can control by my_gui
         lightingShader.use();
-        lightingShader.setBool("light_shader", my_gui.isLightShaderOn());
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view);
         light.updateShaderCamera(camera,lightingShader);        
@@ -366,11 +363,7 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        if (ui_switch) {
-            ui_switch = false;
-            my_gui.getClick();            
-        }
-        my_gui.display();
+        my_gui->display();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -388,7 +381,7 @@ int main()
     glDeleteBuffers(1, &cubeVBO);
     glDeleteBuffers(1, &planeVBO);
 
-    my_gui.destory();
+    my_gui->destory();
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
@@ -404,6 +397,9 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
+    if (my_gui->isUIShow())
+        return;
+
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -417,7 +413,7 @@ void processInput(GLFWwindow* window)
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS)
-        ui_switch = true;
+        my_gui->clickF1();
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -433,7 +429,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-    if (ui_show) {
+    if (my_gui->isUIShow()) {
         firstMouse = true;
         return;
     }
