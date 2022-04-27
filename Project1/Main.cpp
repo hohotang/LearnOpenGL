@@ -13,6 +13,7 @@
 #include "mygui.h"
 #include "Camera.h"
 #include "Model.h"
+#include "lightSource.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -241,6 +242,14 @@ int main()
     // -------------------------------------------------------------------------------------------
     lightingShader.use(); // don't forget to activate/use the shader before setting uniforms!
 
+    // TODO Material thing
+    LightSource light;
+    for (unsigned int i = 0; i < 4; i++) {
+        light.addPoint(pointLightPositions[i], pointLightColors[i]);
+    }
+    light.updateShader(lightingShader);
+    light.updateShaderCamera(camera, lightingShader);
+
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
     lightingShader.setInt("material.emission", 2);
@@ -273,40 +282,9 @@ int main()
 
         lightingShader.use();
         lightingShader.setBool("light_shader", my_gui.isLightShaderOn());
-        lightingShader.setVec3("viewPos", camera.Position);
-        // directional light
-        lightingShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        lightingShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-        lightingShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-        lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-        // point light 1
-        for (unsigned int i = 0; i < 4; i++) {
-            std::string number = std::to_string(i);
-            lightingShader.setVec3("pointLights[" + number + "].position", pointLightPositions[i]);
-            lightingShader.setVec3("pointLights[" + number + "].ambient", pointLightColors[i]*0.05f);
-            lightingShader.setVec3("pointLights[" + number + "].diffuse", pointLightColors[i] * 0.8f);
-            lightingShader.setVec3("pointLights[" + number + "].specular", pointLightColors[i] * 1.0f);
-            lightingShader.setFloat("pointLights[" + number + "].constant", 1.0f);
-            lightingShader.setFloat("pointLights[" + number + "].linear", 0.09f);
-            lightingShader.setFloat("pointLights[" + number + "].quadratic", 0.032f);
-        }
-        // spotLight
-        lightingShader.setVec3("spotLight.position", camera.Position);
-        lightingShader.setVec3("spotLight.direction", camera.Front);
-        lightingShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-        lightingShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-        lightingShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-        lightingShader.setFloat("spotLight.constant", 1.0f);
-        lightingShader.setFloat("spotLight.linear", 0.09f);
-        lightingShader.setFloat("spotLight.quadratic", 0.032f);
-        lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-        lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view);
-
-
-        
+        light.updateShaderCamera(camera,lightingShader);        
 
         // draw floor as normal, but don't write the floor to the stencil buffer, we only care about the containers. We set its mask to 0x00 to not write to the stencil buffer.
         glStencilMask(0x00);
@@ -366,6 +344,7 @@ int main()
         ourModel.Draw(outLineShader);
 
         glBindVertexArray(0);
+
         glStencilMask(0xFF);
         glStencilFunc(GL_ALWAYS, 0, 0xFF);
         glEnable(GL_DEPTH_TEST);

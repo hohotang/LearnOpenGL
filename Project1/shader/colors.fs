@@ -98,6 +98,7 @@ void main()
     // phase 2: Point lights
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir); 
+    // phase 3: spot light
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir); 
 
     // phase 4: emission
