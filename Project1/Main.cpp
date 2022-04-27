@@ -366,17 +366,11 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        // TODO do it in mygui.h
         if (ui_switch) {
             ui_switch = false;
-            ui_show = !ui_show;
-            if(ui_show)
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            else
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            my_gui.getClick();            
         }
-        if (ui_show)
-            my_gui.display();
+        my_gui.display();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

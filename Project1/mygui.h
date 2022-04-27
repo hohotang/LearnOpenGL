@@ -24,6 +24,8 @@ public:
 
     void display()
     {
+        if (ui_show == false)
+            return;
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -82,11 +84,22 @@ public:
 
     bool isLightShaderOn() { return isLightShader; }
 
+    void getClick()
+    {
+        ui_show = !ui_show;
+        if (ui_show)
+            glfwSetInputMode(t_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        else
+            glfwSetInputMode(t_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
 private:
     bool show_demo_window;
     bool show_another_window ;
     ImVec4 clear_color;
     bool isLightShader;
+    GLFWwindow* t_window;
+    bool ui_show;
 
 	void init(GLFWwindow* window, const char* glsl_version)
 	{
@@ -109,5 +122,7 @@ private:
         show_another_window = false;
         clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
         isLightShader = false;
+        ui_show = false;
+        t_window = window;
 	}
 };
