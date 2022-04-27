@@ -55,7 +55,6 @@ uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
 uniform sampler2D texture_diffuse1;
-uniform sampler2D texture1;
 
 uniform bool light_shader;
 uniform bool fog_effect;
@@ -77,23 +76,21 @@ float logisticDepth(float depth, float steepness, float offset)
 	float zVal = linearizeDepth(depth);
 	return (1 / (1 + exp(-steepness * (zVal - offset))));
 }
-
-// TODO control fog effect by gui
+// TODO correct mesh texture (material)
 void main()
 {
 // properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-	
-
     
-    // phase 1: Directional lighting
     vec3 result = vec3(0.0);
-    result = CalcDirLight(dirLight, norm, viewDir);
-
+    result = vec3(texture(texture_diffuse1, TexCoords));
     // light
     if (light_shader == true)
-    {
+    {    
+        // phase 1: Directional lighting
+        result = CalcDirLight(dirLight, norm, viewDir);
+
         // phase 2: Point lights
         for(int i = 0; i < NR_POINT_LIGHTS; i++)
             result += CalcPointLight(pointLights[i], norm, FragPos, viewDir); 
