@@ -257,9 +257,9 @@ int main()
     unsigned int floorTexture = loadTexture("resources/textures/metal.png");
     unsigned int transparentTexture = loadTexture("resources/textures/window.png");
 
-    // transparent vegetation locations
+    // transparent window_red locations
     // --------------------------------
-    vector<glm::vec3> vegetation
+    vector<glm::vec3> window_red
     {
         glm::vec3(-1.5f, 0.0f, -0.48f),
         glm::vec3(1.5f, 0.0f, 0.51f),
@@ -299,6 +299,15 @@ int main()
 
         // input
         processInput(window);
+
+        // sort the transparent windows before rendering
+        // ---------------------------------------------
+        std::map<float, glm::vec3> sorted;
+        for (unsigned int i = 0; i < window_red.size(); i++)
+        {
+            float distance = glm::length(camera.Position - window_red[i]);
+            sorted[distance] = window_red[i];
+        }
         
         // render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -345,13 +354,13 @@ int main()
         lightingShader.setMat4("model", glm::mat4(1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
-        // vegetation
+        // window_red
         glBindVertexArray(transparentVAO);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
-        for (unsigned int i = 0; i < vegetation.size(); i++)
+        for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
         {
             model = glm::mat4(1.0f);
-            model = glm::translate(model, vegetation[i]);
+            model = glm::translate(model, it->second);
             lightingShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 6);
         }
