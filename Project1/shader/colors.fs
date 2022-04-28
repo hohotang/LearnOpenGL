@@ -55,6 +55,7 @@ uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
 uniform sampler2D texture_diffuse1;
+uniform sampler2D texture1;
 
 uniform bool light_shader;
 uniform bool fog_effect;
@@ -84,7 +85,10 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
     
     vec3 result = vec3(0.0);
-    result = vec3(texture(texture_diffuse1, TexCoords));
+    vec4 texColor  = texture(texture1, TexCoords);
+    if(texColor.a < 0.1)
+        discard;
+    result = vec3(texColor);
     // light
     if (light_shader == true)
     {    
