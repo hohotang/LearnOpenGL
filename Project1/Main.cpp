@@ -105,7 +105,6 @@ int main()
 	// ------------------------------------
     Shader lightingShader("shader/colors.vs", "shader/colors.fs");
     Shader lightCubeShader("shader/light.vs", "shader/light.fs");
-    Shader outLineShader("shader/outline.vs", "shader/outline.fs");
     my_gui->regShader(&lightingShader);
 
     // load models
@@ -315,11 +314,21 @@ int main()
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)view_width / (float)view_height, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 model = glm::mat4(1.0f);
 
-        outLineShader.use();
-        outLineShader.setMat4("projection", projection);
-        outLineShader.setMat4("view", view);
-        outLineShader.setFloat("outlining", 0.08f);
+        lightCubeShader.use();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", view);
+        glBindVertexArray(lightVAO);
+        for (unsigned int i = 0; i < 4; i++) {
+            lightCubeShader.setVec3("lightColor", pointLightColors[i]);
+
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+            lightCubeShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // TODO a shader contorller, that can control by my_gui
         lightingShader.use();
@@ -327,17 +336,15 @@ int main()
         lightingShader.setMat4("view", view);
         light.updateShaderCamera(camera,lightingShader);        
 
-        glm::mat4 model = glm::mat4(1.0f);
-
-
         // render the loaded model
         //model = glm::mat4(1.0f);
         //model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         //model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
         //lightingShader.setMat4("model", model);
         //ourModel.Draw(lightingShader);
-        
+
         // cubes
+        model = glm::mat4(1.0f);
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
@@ -366,20 +373,7 @@ int main()
         }
         glBindVertexArray(0);
 
-
-        lightCubeShader.use();
-        lightCubeShader.setMat4("projection", projection);
-        lightCubeShader.setMat4("view", view);
-        glBindVertexArray(lightVAO);
-        for (unsigned int i = 0; i < 4; i++) {
-            lightCubeShader.setVec3("lightColor", pointLightColors[i]);
-
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
-            lightCubeShader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        
 
         my_gui->display();
 
