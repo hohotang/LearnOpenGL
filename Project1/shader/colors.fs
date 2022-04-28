@@ -78,6 +78,7 @@ float logisticDepth(float depth, float steepness, float offset)
 	return (1 / (1 + exp(-steepness * (zVal - offset))));
 }
 // TODO correct mesh texture (material)
+// TODO refactoring
 void main()
 {
 // properties
@@ -86,7 +87,7 @@ void main()
     
     vec3 result = vec3(0.0);
     vec4 texColor  = texture(texture1, TexCoords);
-    if(texColor.a < 0.1)
+    if(texColor.a < 0.05)
         discard;
     result = vec3(texColor);
     // light
@@ -108,16 +109,17 @@ void main()
             result += emission;
         }*/
     }
+    texColor = vec4(result, texColor.a);
     // fog
     float fog_coef1 = 1.0f;
     vec4 fog_coef2 = vec4(0.0f);
     if (fog_effect){
         float depth = logisticDepth(gl_FragCoord.z, 0.5f, 5.0f);
         fog_coef1 = 1.0f - depth;
-        fog_coef2 = vec4(depth * vec3(0.1f, 0.1f, 0.1f), 1.0f);
+        fog_coef2 = vec4(depth * vec3(0.1f, 0.1f, 0.1f), texColor.a);
     }
   
-    FragColor = vec4(result, 1.0) * fog_coef1 + fog_coef2;
+    FragColor = texColor * fog_coef1 + fog_coef2;
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)

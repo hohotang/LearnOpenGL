@@ -97,6 +97,8 @@ int main()
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthFunc(GL_LESS);
 
 	// build and compile our shader program
@@ -253,7 +255,7 @@ int main()
     // -------------
     unsigned int cubeTexture = loadTexture("resources/textures/marble.jpg");
     unsigned int floorTexture = loadTexture("resources/textures/metal.png");
-    unsigned int transparentTexture = loadTexture("resources/textures/grass.png");
+    unsigned int transparentTexture = loadTexture("resources/textures/window.png");
 
     // transparent vegetation locations
     // --------------------------------
