@@ -357,7 +357,7 @@ int main()
         model = glm::mat4(1.0f);
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, cubeTexture);
+        //glBindTexture(GL_TEXTURE_2D, cubeTexture); // do i realy need this ?
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
