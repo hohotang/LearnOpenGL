@@ -100,10 +100,10 @@ int main()
 
 	// build and compile our shader program
 	// ------------------------------------
-    Shader lightingShader("shader/colors.vs", "shader/colors.fs");
+    Shader shader("shader/colors.vs", "shader/colors.fs");
     Shader lightCubeShader("shader/light.vs", "shader/light.fs");
     Shader screenShader("shader/framebuffers_screen.vs", "shader/framebuffers_screen.fs");
-    my_gui->regShader(&lightingShader);
+    my_gui->regShader(&shader);
 
     // load models
     // -----------
@@ -244,11 +244,6 @@ int main()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-    // gen Framebuffer
-    unsigned int fbo;
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
     // load textures
     // -------------
     unsigned int cubeTexture = loadTexture("resources/textures/marble.jpg");
@@ -256,8 +251,8 @@ int main()
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
-    lightingShader.use();
-    lightingShader.setInt("texture1", 0);
+    shader.use();
+    shader.setInt("texture1", 0);
 
     screenShader.use();
     screenShader.setInt("screenTexture", 0);
@@ -286,18 +281,21 @@ int main()
         cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // draw as wireframe
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     LightSource light;
     for (unsigned int i = 0; i < 4; i++) {
         light.addPoint(pointLightPositions[i], pointLightColors[i]);
     }
-    light.updateShader(lightingShader);
-    light.updateShaderCamera(camera, lightingShader);
+    light.updateShader(shader);
+    light.updateShaderCamera(camera, shader);
 
     // TODO delete material
-    lightingShader.setInt("material.diffuse", 0);
-    lightingShader.setInt("material.specular", 1);
-    lightingShader.setInt("material.emission", 2);
-    lightingShader.setFloat("material.shininess", 32.0f);
+    shader.setInt("material.diffuse", 0);
+    shader.setInt("material.specular", 1);
+    shader.setInt("material.emission", 2);
+    shader.setFloat("material.shininess", 32.0f);
 
     // render loop
     // -----------
@@ -340,17 +338,17 @@ int main()
         }
 
         // TODO a shader contorller, that can control by my_gui
-        lightingShader.use();
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setMat4("view", view);
-        light.updateShaderCamera(camera,lightingShader);        
+        shader.use();
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+        light.updateShaderCamera(camera,shader);        
 
         // render the loaded model
         //model = glm::mat4(1.0f);
         //model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         //model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        //lightingShader.setMat4("model", model);
-        //ourModel.Draw(lightingShader);
+        //shader.setMat4("model", model);
+        //ourModel.Draw(shader);
 
         // cubes
         model = glm::mat4(1.0f);
@@ -358,16 +356,16 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-        lightingShader.setMat4("model", model);
+        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-        lightingShader.setMat4("model", model);
+        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         // // floor
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
-        lightingShader.setMat4("model", glm::mat4(1.0f));
+        shader.setMat4("model", glm::mat4(1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
