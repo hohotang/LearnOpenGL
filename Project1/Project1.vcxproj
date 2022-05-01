@@ -177,6 +177,8 @@
   <ItemGroup>
     <None Include="shader\colors.fs" />
     <None Include="shader\colors.vs" />
+    <None Include="shader\cubemaps.fs" />
+    <None Include="shader\cubemaps.vs" />
     <None Include="shader\framebuffers_screen.fs" />
     <None Include="shader\framebuffers_screen.vs" />
     <None Include="shader\light.fs" />
