@@ -108,7 +108,7 @@ int main()
 
     // load models
     // -----------
-    //Model ourModel("resources/backpack/backpack.obj");
+    Model ourModel("resources/backpack/backpack.obj");
     //Model nanosuitModel("resources/nanosuit/nanosuit.obj");
 
     // camera init
@@ -347,17 +347,17 @@ int main()
         light.updateShaderCamera(camera,shader);        
 
         // render the loaded model
-        //model = glm::mat4(1.0f);
-        //model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        //model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        //shader.setMat4("model", model);
-        //ourModel.Draw(shader);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        shader.setMat4("model", model);
+        ourModel.Draw(shader);
 
         // cubes
         model = glm::mat4(1.0f);
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        //glBindTexture(GL_TEXTURE_2D, cubeTexture);
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
