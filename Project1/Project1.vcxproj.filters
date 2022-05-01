@@ -86,6 +86,12 @@
     <None Include="shader\framebuffers_screen.fs">
       <Filter>Source Files\shader</Filter>
     </None>
+    <None Include="shader\skybox.vs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\skybox.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader\shader_s.h">

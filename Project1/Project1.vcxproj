@@ -183,6 +183,8 @@
     <None Include="shader\light.vs" />
     <None Include="shader\outline.fs" />
     <None Include="shader\outline.vs" />
+    <None Include="shader\skybox.fs" />
+    <None Include="shader\skybox.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
