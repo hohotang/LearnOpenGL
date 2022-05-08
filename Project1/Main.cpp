@@ -101,14 +101,14 @@ int main()
 
 	// build and compile our shader program
 	// ------------------------------------
-    Shader shader("shader/cubemaps.vs", "shader/cubemaps.fs");
+    Shader shader("shader/AD_GLSL.vs", "shader/AD_GLSL.fs");
     Shader lightCubeShader("shader/light.vs", "shader/light.fs");
     Shader skyboxShader("shader/skybox.vs", "shader/skybox.fs");
     my_gui->regShader(&shader);
 
     // load models
     // -----------
-    Model ourModel("resources/backpack/backpack.obj");
+    //Model ourModel("resources/backpack/backpack.obj");
     //Model nanosuitModel("resources/nanosuit/nanosuit.obj");
 
     // camera init
@@ -347,11 +347,11 @@ int main()
         light.updateShaderCamera(camera,shader);        
 
         // render the loaded model
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        shader.setMat4("model", model);
-        ourModel.Draw(shader);
+        //model = glm::mat4(1.0f);
+        //model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        //model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        //shader.setMat4("model", model);
+        //ourModel.Draw(shader);
 
         // cubes
         model = glm::mat4(1.0f);

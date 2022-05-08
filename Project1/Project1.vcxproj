@@ -175,6 +175,8 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\AD_GLSL.fs" />
+    <None Include="shader\Ad_GLSL.vs" />
     <None Include="shader\colors.fs" />
     <None Include="shader\colors.vs" />
     <None Include="shader\cubemaps.fs" />
