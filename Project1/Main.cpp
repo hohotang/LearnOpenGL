@@ -268,6 +268,7 @@ int main()
     // load textures
     // -------------
     unsigned int cubeTexture = loadTexture("resources/textures/marble.jpg");
+    unsigned int cube1Texture = loadTexture("resources/textures/container.jpg");
 
     vector<std::string> faces
     {
@@ -283,7 +284,8 @@ int main()
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     shader.use();
-    shader.setInt("skybox", 0);
+    shader.setInt("frontTexture", 0);
+    shader.setInt("backTexture", 1);
 
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
@@ -357,7 +359,9 @@ int main()
         model = glm::mat4(1.0f);
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, cubeTexture); // do i realy need this ?
+        glBindTexture(GL_TEXTURE_2D, cubeTexture);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, cube1Texture); // do i realy need this ?
         model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
