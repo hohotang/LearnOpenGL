@@ -104,6 +104,18 @@
     <None Include="shader\AD_GLSL.fs">
       <Filter>Source Files\shader</Filter>
     </None>
+    <None Include="shader\red.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\green.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\blue.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\yellow.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader\shader_s.h">

@@ -177,18 +177,22 @@
   <ItemGroup>
     <None Include="shader\AD_GLSL.fs" />
     <None Include="shader\Ad_GLSL.vs" />
+    <None Include="shader\blue.fs" />
     <None Include="shader\colors.fs" />
     <None Include="shader\colors.vs" />
     <None Include="shader\cubemaps.fs" />
     <None Include="shader\cubemaps.vs" />
     <None Include="shader\framebuffers_screen.fs" />
     <None Include="shader\framebuffers_screen.vs" />
+    <None Include="shader\green.fs" />
     <None Include="shader\light.fs" />
     <None Include="shader\light.vs" />
     <None Include="shader\outline.fs" />
     <None Include="shader\outline.vs" />
+    <None Include="shader\red.fs" />
     <None Include="shader\skybox.fs" />
     <None Include="shader\skybox.vs" />
+    <None Include="shader\yellow.fs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
