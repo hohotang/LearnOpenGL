@@ -181,6 +181,9 @@
     <None Include="shader\cubemaps.vs" />
     <None Include="shader\framebuffers_screen.fs" />
     <None Include="shader\framebuffers_screen.vs" />
+    <None Include="shader\Geometry.fs" />
+    <None Include="shader\Geometry.gs" />
+    <None Include="shader\Geometry.vs" />
     <None Include="shader\light.fs" />
     <None Include="shader\light.vs" />
     <None Include="shader\outline.fs" />
