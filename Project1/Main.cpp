@@ -33,6 +33,7 @@ static void glfw_error_callback(int error, const char* description)
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+MyGui* my_gui = new MyGui;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0;
@@ -78,9 +79,11 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
     glfwSwapInterval(1); // Enable vsync
 
+    my_gui->init(window, glsl_version);
+
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -100,27 +103,14 @@ int main()
 	// build and compile our shader program
 	// ------------------------------------
     Shader shader("shader/Geometry.vs", "shader/Geometry.fs", "shader/Geometry.gs");
+    my_gui->regShader(&shader);
+
+    // load models
+    // -----------
+    Model ourModel("resources/backpack/backpack.obj");
 
     // camera init
     camera.setStayOnGround(false);
-
-    float points[] = {
-        -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // top-left
-         0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top-right
-         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom-right
-        -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // bottom-left
-    };
-    unsigned int VBO, VAO;
-    glGenBuffers(1, &VBO);
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-    glBindVertexArray(0);
 
     // render loop
     // -----------
@@ -139,20 +129,31 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+        // configure transformation matrices
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.0f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();;
+        glm::mat4 model = glm::mat4(1.0f);
         shader.use();
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_POINTS, 0, 4);
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+        shader.setMat4("model", model);
+
+        // add time component to geometry shader in the form of a uniform
+        shader.setFloat("time", static_cast<float>(glfwGetTime()));
+
+        // draw model
+        ourModel.Draw(shader);
 
 
+        my_gui->display();
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
 
     }
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
 
+    my_gui->destory();
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwDestroyWindow(window);
@@ -167,6 +168,8 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
+    if (my_gui->isUIShow())
+        return;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -180,8 +183,8 @@ void processInput(GLFWwindow* window)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    /*if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS)
-        my_gui->clickF1();*/
+    if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS)
+        my_gui->clickF1();
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -197,7 +200,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-
+    if (my_gui->isUIShow()) {
+        firstMouse = true;
+        return;
+    }
 
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
