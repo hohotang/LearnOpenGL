@@ -96,7 +96,7 @@ void main()
         // phase 1: Directional lighting
         result = CalcDirLight(dirLight, norm, viewDir);
 
-        // phase 2: Point lights
+        // phase 2: Point lights TODO 確保沒燈的狀態其他light也要能正常運作
         for(int i = 0; i < NR_POINT_LIGHTS; i++)
             result += CalcPointLight(pointLights[i], norm, FragPos, viewDir); 
         // phase 3: spot light

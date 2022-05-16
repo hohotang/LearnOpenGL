@@ -102,15 +102,22 @@ int main()
 
 	// build and compile our shader program
 	// ------------------------------------
-    Shader shader("shader/Geometry.vs", "shader/Geometry.fs", "shader/Geometry.gs");
+    Shader shader("shader/Colors.vs", "shader/Colors.fs");
+    Shader normalShader("shader/Geometry.vs", "shader/Geometry.fs", "shader/Geometry.gs");
     my_gui->regShader(&shader);
 
+    // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+    stbi_set_flip_vertically_on_load(true);
     // load models
     // -----------
     Model ourModel("resources/backpack/backpack.obj");
 
     // camera init
     camera.setStayOnGround(false);
+
+    LightSource light;
+    light.updateShader(shader);
+    light.updateShaderCamera(camera, shader);
 
     // render loop
     // -----------
@@ -137,13 +144,25 @@ int main()
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         shader.setMat4("model", model);
+        light.updateShaderCamera(camera, shader);
 
         // add time component to geometry shader in the form of a uniform
-        shader.setFloat("time", static_cast<float>(glfwGetTime()));
+        //shader.setFloat("time", static_cast<float>(glfwGetTime()));
 
-        // draw model
+        // render the loaded model
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        shader.setMat4("model", model);
         ourModel.Draw(shader);
 
+        // then draw model with normal visualizing geometry shader
+        normalShader.use();
+        normalShader.setMat4("projection", projection);
+        normalShader.setMat4("view", view);
+        normalShader.setMat4("model", model);
+
+        ourModel.Draw(normalShader);
 
         my_gui->display();
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
