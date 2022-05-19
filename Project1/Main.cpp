@@ -102,22 +102,62 @@ int main()
 
 	// build and compile our shader program
 	// ------------------------------------
-    Shader shader("shader/Colors.vs", "shader/Colors.fs");
-    Shader normalShader("shader/Geometry.vs", "shader/Geometry.fs", "shader/Geometry.gs");
+    Shader shader("shader/instancing.vs", "shader/instancing.fs");
+    //Shader normalShader("shader/Geometry.vs", "shader/Geometry.fs", "shader/Geometry.gs");
     my_gui->regShader(&shader);
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     stbi_set_flip_vertically_on_load(true);
     // load models
     // -----------
-    Model ourModel("resources/backpack/backpack.obj");
+    //Model ourModel("resources/backpack/backpack.obj");
+
+    float quadVertices[] = {
+        // positions     // colors
+        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+        -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+
+        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+         0.05f,  0.05f,  0.0f, 1.0f, 1.0f
+    };
+
+
+    unsigned int quadVAO, quadVBO;
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+
+
+    glm::vec2 translations[100];
+    int index = 0;
+    float offset = 0.1f;
+    for (int y = -10; y < 10; y += 2)
+    {
+        for (int x = -10; x < 10; x += 2)
+        {
+            glm::vec2 translation;
+            translation.x = (float)x / 10.0f + offset;
+            translation.y = (float)y / 10.0f + offset;
+            translations[index++] = translation;
+        }
+    }
+
+   
 
     // camera init
     camera.setStayOnGround(false);
 
-    LightSource light;
+    /*LightSource light;
     light.updateShader(shader);
-    light.updateShaderCamera(camera, shader);
+    light.updateShaderCamera(camera, shader);*/
 
     // render loop
     // -----------
@@ -135,34 +175,17 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-        // configure transformation matrices
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.0f, 100.0f);
-        glm::mat4 view = camera.GetViewMatrix();;
-        glm::mat4 model = glm::mat4(1.0f);
+        glBindVertexArray(quadVAO);
         shader.use();
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", view);
-        shader.setMat4("model", model);
-        light.updateShaderCamera(camera, shader);
+        for (unsigned int i = 0; i < 100; i++)
+        {
+            shader.setVec2(("offsets"), translations[i]);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+        glBindVertexArray(0);
 
-        // add time component to geometry shader in the form of a uniform
-        //shader.setFloat("time", static_cast<float>(glfwGetTime()));
 
-        // render the loaded model
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        shader.setMat4("model", model);
-        ourModel.Draw(shader);
-
-        // then draw model with normal visualizing geometry shader
-        normalShader.use();
-        normalShader.setMat4("projection", projection);
-        normalShader.setMat4("view", view);
-        normalShader.setMat4("model", model);
-
-        ourModel.Draw(normalShader);
+        //light.updateShaderCamera(camera, shader);
 
         my_gui->display();
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

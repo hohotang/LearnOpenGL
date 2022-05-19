@@ -184,6 +184,8 @@
     <None Include="shader\Geometry.fs" />
     <None Include="shader\Geometry.gs" />
     <None Include="shader\Geometry.vs" />
+    <None Include="shader\instancing.fs" />
+    <None Include="shader\instancing.vs" />
     <None Include="shader\light.fs" />
     <None Include="shader\light.vs" />
     <None Include="shader\outline.fs" />
