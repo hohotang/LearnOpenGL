@@ -179,9 +179,9 @@ int main()
         shader.use();
         for (unsigned int i = 0; i < 100; i++)
         {
-            shader.setVec2(("offsets"), translations[i]);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            shader.setVec2(("offsets[" + std::to_string(i) + "]"), translations[i]);
         }
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
         glBindVertexArray(0);
 
 
