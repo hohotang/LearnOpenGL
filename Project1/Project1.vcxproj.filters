@@ -113,6 +113,9 @@
     <None Include="shader\instancing.fs">
       <Filter>Source Files\shader</Filter>
     </None>
+    <None Include="shader\planet.vs">
+      <Filter>Source Files\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader\shader_s.h">

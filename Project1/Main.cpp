@@ -102,7 +102,8 @@ int main()
 
 	// build and compile our shader program
 	// ------------------------------------
-    Shader shader("shader/instancing.vs", "shader/instancing.fs");
+    Shader shader("shader/planet.vs", "shader/instancing.fs");
+    Shader instanceShader("shader/instancing.vs", "shader/instancing.fs");
     //Shader normalShader("shader/Geometry.vs", "shader/Geometry.fs", "shader/Geometry.gs");
     my_gui->regShader(&shader);
 
@@ -146,6 +147,35 @@ int main()
     Model planetModel("resources/planet/planet.obj");
     Model rockModel("resources/rock/rock.obj");
 
+    // vertex buffer object
+    unsigned int buffer;
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+    for (unsigned int i = 0; i < rockModel.meshes.size(); i++)
+    {
+        unsigned int VAO = rockModel.meshes[i].VAO;
+        glBindVertexArray(VAO);
+        // vertex attributes
+        std::size_t vec4Size = sizeof(glm::vec4);
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+        glEnableVertexAttribArray(5);
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+        glEnableVertexAttribArray(6);
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+        glVertexAttribDivisor(3, 1);
+        glVertexAttribDivisor(4, 1);
+        glVertexAttribDivisor(5, 1);
+        glVertexAttribDivisor(6, 1);
+
+        glBindVertexArray(0);
+    }
+
     // camera init
     camera.setStayOnGround(false);
 
@@ -170,16 +200,17 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //light.updateShaderCamera(camera, shader);
-        // 
         // configure transformation matrices
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
-        glm::mat4 view = camera.GetViewMatrix();;
+        glm::mat4 view = camera.GetViewMatrix();
+        instanceShader.use();
+        instanceShader.setMat4("projection", projection);
+        instanceShader.setMat4("view", view);
         shader.use();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
 
         // draw planet
-        shader.use();
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
         model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
@@ -187,10 +218,15 @@ int main()
         planetModel.Draw(shader);
 
         // draw meteorites
-        for (unsigned int i = 0; i < amount; i++)
+        instanceShader.use();
+        instanceShader.setInt("texture_diffuse1", 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, rockModel.textures_loaded[0].id); // note: we also made the textures_loaded vector public (instead of private) from the model class.
+        for (unsigned int i = 0; i < rockModel.meshes.size(); i++)
         {
-            shader.setMat4("model", modelMatrices[i]);
-            rockModel.Draw(shader);
+            glBindVertexArray(rockModel.meshes[i].VAO);
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(rockModel.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, amount);
+            glBindVertexArray(0);
         }
 
         my_gui->display();
