@@ -116,6 +116,12 @@
     <None Include="shader\planet.vs">
       <Filter>Source Files\shader</Filter>
     </None>
+    <None Include="shader\anti_aliasing.vs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\anti_aliasing.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader\shader_s.h">

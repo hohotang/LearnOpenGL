@@ -175,6 +175,8 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\anti_aliasing.fs" />
+    <None Include="shader\anti_aliasing.vs" />
     <None Include="shader\colors.fs" />
     <None Include="shader\colors.vs" />
     <None Include="shader\cubemaps.fs" />
