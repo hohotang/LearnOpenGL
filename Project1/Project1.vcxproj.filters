@@ -122,6 +122,12 @@
     <None Include="shader\anti_aliasing.fs">
       <Filter>Source Files\shader</Filter>
     </None>
+    <None Include="shader\aa.vs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\aa.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader\shader_s.h">
