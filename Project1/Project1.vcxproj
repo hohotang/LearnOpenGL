@@ -177,6 +177,7 @@
   <ItemGroup>
     <None Include="shader\aa.fs" />
     <None Include="shader\aa.vs" />
+    <None Include="shader\advanced_light.fs" />
     <None Include="shader\anti_aliasing.fs" />
     <None Include="shader\anti_aliasing.vs" />
     <None Include="shader\colors.fs" />

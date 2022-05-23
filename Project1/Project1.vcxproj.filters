@@ -128,6 +128,9 @@
     <None Include="shader\aa.fs">
       <Filter>Source Files\shader</Filter>
     </None>
+    <None Include="shader\advanced_light.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader\shader_s.h">
