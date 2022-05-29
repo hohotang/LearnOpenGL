@@ -21,7 +21,7 @@ void processInput(GLFWwindow* window);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-unsigned int loadTexture(const char* path);
+unsigned int loadTexture(const char* path, bool gammaCorrection);
 unsigned int loadCubemap(vector<std::string> faces);
 
 static void glfw_error_callback(int error, const char* description)
@@ -33,7 +33,11 @@ static void glfw_error_callback(int error, const char* description)
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+bool gammaEnabled = false;
+bool gammaKeyPressed = false;
+
 MyGui* my_gui = new MyGui;
+
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0;
@@ -104,7 +108,7 @@ int main()
 
 	// build and compile our shader program
 	// ------------------------------------
-    Shader shader("shader/colors.vs", "shader/advanced_light.fs");
+    Shader shader("shader/colors.vs", "shader/gamma.fs");
     my_gui->regShader(&shader);
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
@@ -138,14 +142,31 @@ int main()
     // load models
     // -----------
     //Model ourModel("resources/backpack/backpack.obj");
-    unsigned int floorTexture = loadTexture("resources/textures/wood.png");
+    unsigned int floorTexture = loadTexture("resources/textures/wood.png", false);
+    unsigned int floorTextureGammaCorrected = loadTexture("resources/textures/wood.png", true);
 
     // camera init
     camera.setStayOnGround(false);
 
+    // shader configuration
+     // --------------------
+    shader.use();
+    shader.setInt("floorTexture", 0);
+
     // lighting info
     // -------------
-    glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
+    glm::vec3 lightPositions[] = {
+        glm::vec3(-3.0f, 0.0f, 0.0f),
+        glm::vec3(-1.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        glm::vec3(3.0f, 0.0f, 0.0f)
+    };
+    glm::vec3 lightColors[] = {
+        glm::vec3(0.25),
+        glm::vec3(0.50),
+        glm::vec3(0.75),
+        glm::vec3(1.00)
+    };
 
     // render loop
     // -----------
@@ -171,16 +192,18 @@ int main()
         shader.setMat4("view", view);
         shader.setMat4("model", glm::mat4(1.0f));
         // set light uniforms
+        glUniform3fv(glGetUniformLocation(shader.ID, "lightPositions"), 4, &lightPositions[0][0]);
+        glUniform3fv(glGetUniformLocation(shader.ID, "lightColors"), 4, &lightColors[0][0]);
         shader.setVec3("viewPos", camera.Position);
-        shader.setVec3("lightPos", lightPos);
-        shader.setInt("blinn", blinn);
+        shader.setInt("gamma", gammaEnabled);
         // floor
         glBindVertexArray(planeVAO);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        glBindTexture(GL_TEXTURE_2D, gammaEnabled ? floorTextureGammaCorrected : floorTexture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        std::cout << (blinn ? "Blinn-Phong" : "Phong") << std::endl;
+        std::cout << (gammaEnabled ? "Gamma enabled" : "Gamma disabled") << std::endl;
+        //std::cout << (blinn ? "Blinn-Phong" : "Phong") << std::endl;
 
         //light.updateShaderCamera(camera, shader);
 
@@ -220,14 +243,14 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 
-    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !blinnKeyPressed)
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !gammaKeyPressed)
     {
-        blinn = !blinn;
-        blinnKeyPressed = true;
+        gammaEnabled = !gammaEnabled;
+        gammaKeyPressed = true;
     }
-    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
     {
-        blinnKeyPressed = false;
+        gammaKeyPressed = false;
     }
 }
 
@@ -281,7 +304,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 // utility function for loading a 2D texture from file
 // ---------------------------------------------------
-unsigned int loadTexture(char const* path)
+unsigned int loadTexture(char const* path, bool gammaCorrection)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -290,20 +313,29 @@ unsigned int loadTexture(char const* path)
     unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
     if (data)
     {
-        GLenum format;
+        GLenum internalFormat;
+        GLenum dataFormat;
         if (nrComponents == 1)
-            format = GL_RED;
+        {
+            internalFormat = dataFormat = GL_RED;
+        }
         else if (nrComponents == 3)
-            format = GL_RGB;
+        {
+            internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
+            dataFormat = GL_RGB;
+        }
         else if (nrComponents == 4)
-            format = GL_RGBA;
+        {
+            internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+            dataFormat = GL_RGBA;
+        }
 
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

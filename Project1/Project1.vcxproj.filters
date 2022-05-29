@@ -128,7 +128,7 @@
     <None Include="shader\aa.fs">
       <Filter>Source Files\shader</Filter>
     </None>
-    <None Include="shader\advanced_light.fs">
+    <None Include="shader\gamma.fs">
       <Filter>Source Files\shader</Filter>
     </None>
   </ItemGroup>
