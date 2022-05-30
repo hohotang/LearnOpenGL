@@ -131,6 +131,18 @@
     <None Include="shader\gamma.fs">
       <Filter>Source Files\shader</Filter>
     </None>
+    <None Include="shader\3.1.1.shadow_mapping_depth.vs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\3.1.1.shadow_mapping_depth.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\3.1.1.debug_quad.vs">
+      <Filter>Source Files\shader</Filter>
+    </None>
+    <None Include="shader\3.1.1.debug_quad.fs">
+      <Filter>Source Files\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader\shader_s.h">
