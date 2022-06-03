@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -175,10 +175,12 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\3.1.1.debug_quad.fs" />
-    <None Include="shader\3.1.1.debug_quad.vs" />
-    <None Include="shader\3.1.1.shadow_mapping_depth.fs" />
-    <None Include="shader\3.1.1.shadow_mapping_depth.vs" />
+    <None Include="shader\debug_quad.fs" />
+    <None Include="shader\debug_quad.vs" />
+    <None Include="shader\shadow_mapping.fs" />
+    <None Include="shader\shadow_mapping.vs" />
+    <None Include="shader\shadow_mapping_depth.fs" />
+    <None Include="shader\shadow_mapping_depth.vs" />
     <None Include="shader\aa.fs" />
     <None Include="shader\aa.vs" />
     <None Include="shader\gamma.fs" />
